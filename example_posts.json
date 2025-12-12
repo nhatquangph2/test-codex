@@ -1,0 +1,54 @@
+{
+  "platform_settings": {
+    "facebook": {
+      "type": "webhook",
+      "url": "https://example.com/webhook/facebook",
+      "headers": {
+        "Authorization": "Bearer <FACEBOOK_TOKEN>"
+      },
+      "timeout": 8
+    },
+    "instagram": {
+      "type": "console",
+      "label": "instagram-reel"
+    },
+    "tiktok": {
+      "type": "console",
+      "label": "tiktok-short"
+    },
+    "youtube": {
+      "type": "console",
+      "label": "youtube-short"
+    }
+  },
+  "posts": [
+    {
+      "platform": "facebook",
+      "content": "📣 Lịch đăng Facebook: cập nhật sản phẩm mới!",
+      "metadata": {
+        "language": "vi",
+        "topic": "facebook"
+      }
+    },
+    {
+      "platform": "instagram",
+      "content": "✨ Story/reel Instagram về hậu trường sản xuất.",
+      "metadata": {
+        "format": "reel",
+        "hashtags": ["#behindthescenes", "#vietnam"]
+      }
+    },
+    {
+      "platform": "tiktok",
+      "content": "🎬 Tiktok ngắn: tips sử dụng sản phẩm trong 30s.",
+      "scheduled_for": "2030-01-01T00:00:00Z"
+    },
+    {
+      "platform": "youtube",
+      "content": "▶️ YouTube Short: demo nhanh với lời bình.",
+      "metadata": {
+        "category": "Education"
+      }
+    }
+  ]
+}
