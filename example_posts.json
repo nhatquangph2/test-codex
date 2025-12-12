@@ -1,0 +1,40 @@
+{
+  "facebook": {
+    "type": "facebook",
+    "page_id": "1234567890",
+    "access_token": "EAABsbCS1iHgBA...long_live_page_token",
+    "post": {
+      "message": "Chúng tôi vừa ra mắt tính năng mới!",
+      "link": "https://example.com/blog/new-feature"
+    }
+  },
+  "instagram": {
+    "type": "instagram",
+    "business_account_id": "17841400000000000",
+    "access_token": "IGQVJ...long_live_instagram_token",
+    "post": {
+      "image_url": "https://example.com/assets/poster.jpg",
+      "caption": "Ảnh hậu trường sự kiện #launchday"
+    }
+  },
+  "tiktok": {
+    "type": "tiktok",
+    "advertiser_id": "699999999999999999",
+    "access_token": "act.eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "post": {
+      "caption": "Hướng dẫn nhanh trong 30 giây",
+      "video_url": "https://example.com/video.mp4"
+    }
+  },
+  "youtube": {
+    "type": "youtube",
+    "channel_id": "UC1234567890abcdef",
+    "access_token": "ya29.a0AVvZ...",
+    "post": {
+      "title": "Livestream recap",
+      "description": "Toàn bộ demo được tổng hợp trong video này",
+      "privacy_status": "unlisted",
+      "category_id": "22"
+    }
+  }
+}
