@@ -109,6 +109,7 @@ class InstagramClient(BaseClient):
     def __init__(self, business_account_id: str, access_token: str):
         endpoint = f"https://graph.facebook.com/v18.0/{business_account_id}/media"
         super().__init__(platform="instagram", endpoint=endpoint, access_token=access_token)
+        self.business_account_id = business_account_id
 
     def build_request(self, content: Dict) -> Tuple[Dict, Dict]:
         payload = {
@@ -117,6 +118,28 @@ class InstagramClient(BaseClient):
             "access_token": self.access_token,
         }
         return payload, {}
+
+    def publish(self, content: Dict) -> Dict:
+        # First create a media container
+        payload, headers = self.build_request(content)
+        creation_response = self.session.post(
+            self.endpoint, json_payload=payload, headers=headers
+        )
+        creation_data = self._handle_response(creation_response)
+
+        creation_id = creation_data.get("id")
+        if not creation_id:
+            raise SocialClientError("Instagram did not return media container id")
+
+        publish_endpoint = (
+            f"https://graph.facebook.com/v18.0/{self.business_account_id}/media_publish"
+        )
+        publish_payload = {"creation_id": creation_id, "access_token": self.access_token}
+
+        publish_response = self.session.post(
+            publish_endpoint, json_payload=publish_payload, headers={}
+        )
+        return self._handle_response(publish_response)
 
 
 class TikTokClient(BaseClient):
@@ -164,6 +187,19 @@ class YouTubeClient(BaseClient):
             "X-Upload-Content-ChannelId": self.channel_id,
         }
         return payload, headers
+
+    def publish(self, content: Dict) -> Dict:
+        payload, headers = self.build_request(content)
+        if "video_data" not in content:
+            raise SocialClientError("YouTube video_data is required for upload")
+
+        payload["media_body"] = content["video_data"]
+        upload_endpoint = f"{self.endpoint}&uploadType=multipart"
+
+        response = self.session.post(
+            upload_endpoint, json_payload=payload, headers=headers
+        )
+        return self._handle_response(response)
 
 
 def create_client(config: Dict) -> BaseClient:

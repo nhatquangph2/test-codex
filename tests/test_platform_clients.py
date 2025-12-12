@@ -55,26 +55,33 @@ def test_facebook_payload(monkeypatch):
 
 
 def test_instagram_payload(monkeypatch):
-    response = _response(json_data={"id": "ig_1"})
+    responses = [_response(json_data={"id": "ig_container"}), _response(json_data={"id": "ig_post"})]
     client = InstagramClient(business_account_id="ig-business", access_token="insta-token")
 
-    captured = {}
+    captured = []
 
     def fake_post(url, json_payload=None, headers=None):
-        captured.update({"url": url, "json": json_payload, "headers": headers})
-        return response
+        captured.append({"url": url, "json": json_payload, "headers": headers})
+        return responses.pop(0)
 
     monkeypatch.setattr(client, "session", Mock(post=fake_post))
 
-    client.publish({"image_url": "https://example.com/photo.jpg", "caption": "Caption"})
+    result = client.publish({"image_url": "https://example.com/photo.jpg", "caption": "Caption"})
 
-    assert captured["url"].endswith("/ig-business/media")
-    assert captured["json"] == {
+    assert result == {"id": "ig_post"}
+    assert captured[0]["url"].endswith("/ig-business/media")
+    assert captured[0]["json"] == {
         "image_url": "https://example.com/photo.jpg",
         "caption": "Caption",
         "access_token": "insta-token",
     }
-    assert captured["headers"] == {}
+    assert captured[0]["headers"] == {}
+    assert captured[1]["url"].endswith("/ig-business/media_publish")
+    assert captured[1]["json"] == {
+        "creation_id": "ig_container",
+        "access_token": "insta-token",
+    }
+    assert captured[1]["headers"] == {}
 
 
 def test_error_logging_on_token_expiry(monkeypatch, caplog):
@@ -104,8 +111,17 @@ def test_youtube_payload_and_error(monkeypatch, caplog):
 
     with caplog.at_level(logging.ERROR):
         with pytest.raises(SocialClientError):
-            client.publish({"title": "Demo", "description": "desc", "privacy_status": "public"})
+            client.publish(
+                {
+                    "title": "Demo",
+                    "description": "desc",
+                    "privacy_status": "public",
+                    "video_data": b"video-bytes",
+                }
+            )
 
     assert captured["headers"]["Authorization"] == "Bearer yt-token"
     assert captured["headers"]["X-Upload-Content-ChannelId"] == "UC123"
+    assert captured["url"].endswith("uploadType=multipart")
+    assert captured["json"]["media_body"] == b"video-bytes"
     assert "api error" in caplog.text.lower()
